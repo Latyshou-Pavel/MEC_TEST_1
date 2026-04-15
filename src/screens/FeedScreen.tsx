@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -7,12 +7,14 @@ import {
   Text,
   View,
 } from "react-native";
+import { observer } from "mobx-react-lite";
 import { useFeedInfiniteQuery } from "../features/feed/model/useFeedInfiniteQuery";
+import { feedStore } from "../features/feed/model/feedStore";
 import { FeedErrorState } from "../features/feed/ui/FeedErrorState";
 import { PostCard } from "../features/feed/ui/PostCard";
 import { colors, spacing } from "../shared/theme/tokens";
 
-export function FeedScreen() {
+export const FeedScreen = observer(function FeedScreen() {
   const {
     posts,
     isLoading,
@@ -25,6 +27,10 @@ export function FeedScreen() {
     refetch,
   } = useFeedInfiniteQuery();
 
+  useEffect(() => {
+    feedStore.setPosts(posts);
+  }, [posts]);
+
   const handleEndReached = useCallback(() => {
     if (!hasNextPage || isFetchingNextPage || isLoading) {
       return;
@@ -33,11 +39,11 @@ export function FeedScreen() {
     void fetchNextPage();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading]);
 
-  if (isError && posts.length === 0) {
+  if (isError && feedStore.posts.length === 0) {
     return <FeedErrorState onRetry={() => void refetch()} isLoading={isFetching} />;
   }
 
-  if (isLoading && posts.length === 0 && !isError) {
+  if (isLoading && feedStore.posts.length === 0 && !isError) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
@@ -47,7 +53,7 @@ export function FeedScreen() {
 
   return (
     <FlatList
-      data={posts}
+      data={feedStore.posts}
       keyExtractor={(item) => item.id}
       contentContainerStyle={styles.contentContainer}
       renderItem={({ item }) => <PostCard post={item} />}
@@ -66,7 +72,7 @@ export function FeedScreen() {
       }
     />
   );
-}
+});
 
 const styles = StyleSheet.create({
   centered: {

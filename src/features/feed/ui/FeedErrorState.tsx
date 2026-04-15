@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     letterSpacing: typography.errorTitle.letterSpacing,
     color: colors.text.primary,
     textAlign: "center",
-    fontVariant: ["lining-nums", "tabular-nums"],
   },
   illustration: {
     width: 128,
@@ -94,6 +93,5 @@ const styles = StyleSheet.create({
     fontWeight: typography.button.fontWeight,
     letterSpacing: typography.button.letterSpacing,
     color: colors.text.inverse,
-    fontVariant: ["lining-nums", "tabular-nums"],
   },
 });
