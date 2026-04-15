@@ -1,0 +1,306 @@
+import React from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import Svg, { Path, G, Defs, ClipPath, Rect } from "react-native-svg";
+import type { Post } from "../../../entities/post/model/types";
+import {
+  colors,
+  radius,
+  spacing,
+  typography,
+} from "../../../shared/theme/tokens";
+
+type PostCardProps = {
+  post: Post;
+};
+
+export function PostCard({ post }: PostCardProps) {
+  const isPaid = post.tier === "paid";
+  const likeChipStyles = [
+    styles.reactionChipBase,
+    post.isLiked ? styles.likeChipActive : styles.likeChipDefault,
+  ];
+  const likeTextStyles = [
+    styles.reactionTextBase,
+    post.isLiked ? styles.likeTextActive : styles.likeTextDefault,
+  ];
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.authorRow}>
+        <Image source={{ uri: post.author.avatarUrl }} style={styles.avatar} />
+        <Text style={styles.authorName}>{post.author.displayName}</Text>
+      </View>
+
+      {!!post.coverUrl && (
+        <View style={styles.coverWrapper}>
+          <Image
+            source={{ uri: post.coverUrl }}
+            style={styles.cover}
+            resizeMode="cover"
+            blurRadius={isPaid ? 40 : 0}
+          />
+          {isPaid ? (
+            <View style={styles.paidOverlay}>
+              <View style={styles.paidIconBox}>
+                <DollarSignIcon />
+              </View>
+              <Text style={styles.paidText}>
+                Контент скрыт пользователем.{"\n"}Доступ откроется после доната
+              </Text>
+              <Pressable style={styles.paidButton}>
+                <Text style={styles.paidButtonText}>Поддержать</Text>
+              </Pressable>
+            </View>
+          ) : null}
+        </View>
+      )}
+
+      {isPaid ? <View style={styles.paidTitleSkeleton} /> : <Text style={styles.title}>{post.title}</Text>}
+      {isPaid ? (
+        <View style={styles.paidPreviewSkeleton} />
+      ) : (
+        <Text style={styles.preview}>{post.preview}</Text>
+      )}
+
+      {!isPaid ? (
+        <View style={styles.metaRow}>
+          <View style={likeChipStyles}>
+            <View style={styles.reactionIconSlot}>
+              {post.isLiked ? <LikeActiveIcon /> : <LikeDefaultIcon />}
+            </View>
+            <Text style={likeTextStyles}>{post.likesCount}</Text>
+          </View>
+          <View style={[styles.reactionChipBase, styles.commentChip]}>
+            <View style={styles.reactionIconSlot}>
+              <CommentIcon />
+            </View>
+            <Text style={[styles.reactionTextBase, styles.commentText]}>
+              {post.commentsCount}
+            </Text>
+          </View>
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
+function LikeDefaultIcon() {
+  return (
+    <Svg width={17} height={15} viewBox="0 0 17 15" fill="none">
+      <Path
+        d="M8.25613 12.7112L8.17439 12.7929L8.08447 12.7112C4.20164 9.18801 1.63488 6.85831 1.63488 4.49591C1.63488 2.86104 2.86104 1.63488 4.49591 1.63488C5.75477 1.63488 6.98093 2.45232 7.41417 3.56403H8.93461C9.36785 2.45232 10.594 1.63488 11.8529 1.63488C13.4877 1.63488 14.7139 2.86104 14.7139 4.49591C14.7139 6.85831 12.1471 9.18801 8.25613 12.7112ZM11.8529 0C10.4305 0 9.0654 0.662125 8.17439 1.70027C7.28338 0.662125 5.91826 0 4.49591 0C1.9782 0 0 1.97003 0 4.49591C0 7.57766 2.77929 10.1035 6.9891 13.921L8.17439 15L9.35967 13.921C13.5695 10.1035 16.3488 7.57766 16.3488 4.49591C16.3488 1.97003 14.3706 0 11.8529 0Z"
+        fill={colors.reaction.defaultContent}
+      />
+    </Svg>
+  );
+}
+
+function LikeActiveIcon() {
+  return (
+    <Svg width={17} height={15} viewBox="0 0 17 15" fill="none">
+      <Path
+        d="M8.17439 15L6.9891 13.921C2.77929 10.1035 0 7.57766 0 4.49591C0 1.97003 1.9782 0 4.49591 0C5.91826 0 7.28338 0.662125 8.17439 1.70027C9.0654 0.662125 10.4305 0 11.8529 0C14.3706 0 16.3488 1.97003 16.3488 4.49591C16.3488 7.57766 13.5695 10.1035 9.35967 13.921L8.17439 15Z"
+        fill={colors.reaction.activeContent}
+      />
+    </Svg>
+  );
+}
+
+function CommentIcon() {
+  return (
+    <Svg width={15} height={15} viewBox="0 0 15 15" fill="none">
+      <G clipPath="url(#clip0_comment)">
+        <Path
+          d="M15 7.03125C15 10.3975 11.6426 13.125 7.50002 13.125C6.4131 13.125 5.38185 12.9375 4.45021 12.6006C4.10158 12.8555 3.53322 13.2041 2.85939 13.4971C2.15626 13.8018 1.30958 14.0625 0.468764 14.0625C0.278335 14.0625 0.108413 13.9482 0.0351706 13.7725C-0.0380716 13.5967 0.00294399 13.3975 0.13478 13.2627L0.143569 13.2539C0.152358 13.2451 0.164077 13.2334 0.181655 13.2129C0.213882 13.1777 0.263686 13.1221 0.32521 13.0459C0.445327 12.8994 0.60646 12.6826 0.770522 12.4131C1.06349 11.9268 1.34181 11.2881 1.39748 10.5703C0.518569 9.57422 1.43097e-05 8.35254 1.43097e-05 7.03125C1.43097e-05 3.66504 3.35744 0.9375 7.50002 0.9375C11.6426 0.9375 15 3.66504 15 7.03125Z"
+          fill={colors.reaction.defaultContent}
+        />
+      </G>
+      <Defs>
+        <ClipPath id="clip0_comment">
+          <Rect width={15} height={15} fill="white" />
+        </ClipPath>
+      </Defs>
+    </Svg>
+  );
+}
+
+function DollarSignIcon() {
+  return (
+    <Svg width={20} height={20} viewBox="0 0 20 20" fill="none">
+      <Path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10 20C15.5228 20 20 15.5228 20 10C20 4.47715 15.5228 0 10 0C4.47715 0 0 4.47715 0 10C0 15.5228 4.47715 20 10 20ZM10.0003 4C10.2774 4 10.5004 4.25078 10.5004 4.5625H10.5025V5.72031C11.0714 5.78594 11.6027 5.91016 11.9924 6.01328C12.2612 6.08594 12.4279 6.38828 12.3633 6.69063C12.2987 6.99297 12.0299 7.18047 11.7611 7.10781C11.1193 6.93906 10.1857 6.74219 9.38761 6.81484C8.99168 6.85 8.67077 6.95078 8.44363 7.1125C8.23316 7.2625 8.08312 7.47813 8.02269 7.825C7.97685 8.09922 8.0081 8.275 8.06437 8.39922C8.12272 8.53281 8.23316 8.66406 8.42071 8.79531C8.81872 9.07422 9.41679 9.25 10.1232 9.45156L10.1711 9.46562C10.8171 9.65078 11.5611 9.86406 12.107 10.2437C12.3967 10.4453 12.6655 10.7172 12.8322 11.0922C13.001 11.4766 13.0406 11.9102 12.9593 12.3859C12.8176 13.2156 12.28 13.757 11.6152 14.0406C11.2797 14.1836 10.9026 14.268 10.5004 14.2984V15.4375C10.5004 15.7492 10.2774 16 10.0003 16C9.72311 16 9.50014 15.7492 9.50014 15.4375V14.2703C9.43137 14.2633 9.36261 14.2539 9.29384 14.2422H9.29175C8.77288 14.1578 7.8539 13.9187 7.29751 13.6422C7.04537 13.5156 6.93076 13.1828 7.04328 12.8992C7.15581 12.6156 7.45172 12.4867 7.70386 12.6133C8.14564 12.8336 8.96251 13.0539 9.43346 13.1313C10.1753 13.2484 10.8088 13.1852 11.2589 12.993C11.6986 12.8055 11.9174 12.5195 11.9778 12.175C12.0237 11.9008 11.9924 11.725 11.9362 11.6008C11.8778 11.4672 11.7674 11.3359 11.5798 11.2047C11.1818 10.9258 10.5837 10.75 9.87732 10.5484L9.82939 10.5344C9.18339 10.3492 8.43946 10.1359 7.89349 9.75625C7.60384 9.55469 7.33502 9.28281 7.16831 8.90781C6.99952 8.52344 6.95993 8.08984 7.0412 7.61406C7.15581 6.95312 7.47256 6.475 7.906 6.16563C8.32277 5.86797 8.82289 5.73906 9.30634 5.69453C9.37094 5.6875 9.43554 5.68281 9.50014 5.68047V4.5625C9.50014 4.25078 9.72311 4 10.0003 4Z"
+        fill={colors.text.inverse}
+      />
+    </Svg>
+  );
+}
+
+const styles = StyleSheet.create({
+  card: {
+    width: "100%",
+    backgroundColor: colors.background.primary,
+    borderRadius: radius.xl,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.sm,
+    paddingHorizontal: spacing.md,
+    gap: spacing.md,
+  },
+  authorRow: {
+    minHeight: 40,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: colors.background.avatarPlaceholder,
+  },
+  authorName: {
+    fontFamily: typography.postAuthor.fontFamily,
+    fontSize: typography.postAuthor.fontSize,
+    lineHeight: typography.postAuthor.lineHeight,
+    fontWeight: typography.postAuthor.fontWeight,
+    letterSpacing: typography.postAuthor.letterSpacing,
+    color: colors.text.primary,
+    fontVariant: ["lining-nums", "tabular-nums"],
+  },
+  coverWrapper: {
+    width: 396,
+    height: 396,
+    alignSelf: "center",
+    borderRadius: 0,
+    overflow: "hidden",
+  },
+  cover: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: colors.background.mediaPlaceholder,
+  },
+  paidOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.paid.overlay,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.md,
+    paddingHorizontal: spacing.md,
+  },
+  paidIconBox: {
+    width: 42,
+    height: 42,
+    borderRadius: radius.md,
+    backgroundColor: colors.paid.accent,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  paidText: {
+    fontFamily: typography.paidDescription.fontFamily,
+    fontSize: typography.paidDescription.fontSize,
+    lineHeight: typography.paidDescription.lineHeight,
+    fontWeight: typography.paidDescription.fontWeight,
+    letterSpacing: typography.paidDescription.letterSpacing,
+    color: colors.text.primary,
+    textAlign: "center",
+    fontVariant: ["lining-nums", "tabular-nums"],
+  },
+  paidButton: {
+    width: 239,
+    height: 42,
+    borderRadius: radius.lg,
+    backgroundColor: colors.paid.accent,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  paidButtonText: {
+    fontFamily: typography.button.fontFamily,
+    fontSize: typography.button.fontSize,
+    lineHeight: typography.button.lineHeight,
+    fontWeight: typography.button.fontWeight,
+    letterSpacing: typography.button.letterSpacing,
+    color: colors.text.inverse,
+  },
+  title: {
+    minHeight: 26,
+    fontFamily: typography.postTitle.fontFamily,
+    fontSize: typography.postTitle.fontSize,
+    lineHeight: typography.postTitle.lineHeight,
+    fontWeight: typography.postTitle.fontWeight,
+    letterSpacing: typography.postTitle.letterSpacing,
+    color: colors.text.primary,
+    fontVariant: ["lining-nums", "tabular-nums"],
+  },
+  preview: {
+    fontFamily: typography.postBody.fontFamily,
+    fontSize: typography.postBody.fontSize,
+    lineHeight: typography.postBody.lineHeight,
+    fontWeight: typography.postBody.fontWeight,
+    letterSpacing: typography.postBody.letterSpacing,
+    color: colors.text.secondary,
+    fontVariant: ["lining-nums", "tabular-nums"],
+  },
+  paidPreviewSkeleton: {
+    width: 361,
+    height: 40,
+    borderRadius: 22,
+    backgroundColor: colors.background.skeleton,
+    alignSelf: "flex-start",
+  },
+  paidTitleSkeleton: {
+    width: 164,
+    height: 26,
+    borderRadius: 22,
+    backgroundColor: colors.background.skeleton,
+    alignSelf: "flex-start",
+  },
+  metaRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.xs,
+  },
+  reactionChipBase: {
+    minWidth: 63,
+    height: 36,
+    borderRadius: radius.pill,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: spacing.xxs,
+  },
+  reactionIconSlot: {
+    width: 17,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  likeChipDefault: {
+    backgroundColor: colors.reaction.defaultBackground,
+  },
+  likeChipActive: {
+    backgroundColor: colors.reaction.activeBackground,
+  },
+  commentChip: {
+    backgroundColor: colors.reaction.defaultBackground,
+  },
+  reactionTextBase: {
+    fontFamily: typography.reactionCount.fontFamily,
+    fontSize: typography.reactionCount.fontSize,
+    lineHeight: typography.reactionCount.lineHeight,
+    fontWeight: typography.reactionCount.fontWeight,
+    letterSpacing: typography.reactionCount.letterSpacing,
+    fontVariant: ["lining-nums", "tabular-nums"],
+    includeFontPadding: false,
+  },
+  likeTextDefault: {
+    color: colors.reaction.defaultContent,
+  },
+  likeTextActive: {
+    color: colors.reaction.activeContent,
+  },
+  commentText: {
+    color: colors.reaction.defaultContent,
+  },
+});
