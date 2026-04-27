@@ -170,7 +170,7 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
         keyExtractor={(item) => item.id}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
-            void fetchNextPage();
+            fetchNextPage();
           }
         }}
         onEndReachedThreshold={0.4}
@@ -186,7 +186,7 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
                   isLiked={Boolean(post.isLiked)}
                   likesCount={post.likesCount}
                   disabled={isToggleLikePending}
-                  onPress={() => void handleLikePress()}
+                  onPress={() => handleLikePress()}
                 />
               }
             >
@@ -263,7 +263,7 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
             style={styles.input}
           />
           <Pressable
-            onPress={() => void handleSendComment()}
+            onPress={() => handleSendComment()}
             style={styles.sendButton}
             disabled={isSendDisabled}
             accessibilityRole="button"

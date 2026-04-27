@@ -77,7 +77,7 @@ export const FeedScreen = observer(() => {
 
   const onListRefresh = useCallback(() => {
     setIsUserRefreshing(true);
-    void refetch().finally(() => {
+    refetch().finally(() => {
       setIsUserRefreshing(false);
     });
   }, [refetch]);
@@ -100,7 +100,7 @@ export const FeedScreen = observer(() => {
       return;
     }
 
-    void fetchNextPage();
+    fetchNextPage();
   }, [fetchNextPage, hasNextPage, isFetchingNextPage, isLoading]);
 
   const handleScroll = useCallback((offsetY: number) => {
@@ -124,7 +124,7 @@ export const FeedScreen = observer(() => {
           },
         ]}
       >
-        <FeedErrorState onRetry={() => void refetch()} isLoading={isFetching} />
+        <FeedErrorState onRetry={() => refetch()} isLoading={isFetching} />
       </View>
     );
   }

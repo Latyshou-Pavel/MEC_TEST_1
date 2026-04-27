@@ -76,7 +76,7 @@ function PostReactionsRow({
             if (likePressDisabled) {
               return;
             }
-            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             onLikePress?.();
           }}
           disabled={likePressDisabled}

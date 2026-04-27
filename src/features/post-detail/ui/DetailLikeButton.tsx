@@ -8,7 +8,12 @@ import Animated, {
   withSequence,
   withSpring,
 } from "react-native-reanimated";
-import { colors, radius, spacing, typography } from "../../../shared/theme/tokens";
+import {
+  colors,
+  radius,
+  spacing,
+  typography,
+} from "../../../shared/theme/tokens";
 
 type DetailLikeButtonProps = {
   isLiked: boolean;
@@ -50,7 +55,7 @@ export function DetailLikeButton({
     if (disabled) {
       return;
     }
-    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     buttonScale.value = withSequence(
       withSpring(0.92, { damping: 12, stiffness: 220 }),
       withSpring(1.04, { damping: 10, stiffness: 170 }),

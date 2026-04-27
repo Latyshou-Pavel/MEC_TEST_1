@@ -66,10 +66,10 @@ export function RealtimeProvider({ children }: PropsWithChildren) {
             return;
           }
 
-          void queryClient.invalidateQueries({
+          queryClient.invalidateQueries({
             queryKey: ["post-detail", likeUpdated.postId],
           });
-          void queryClient.invalidateQueries({
+          queryClient.invalidateQueries({
             queryKey: ["feed"],
           });
           if (__DEV__) {
@@ -124,10 +124,10 @@ export function RealtimeProvider({ children }: PropsWithChildren) {
             };
           });
 
-          void queryClient.invalidateQueries({
+          queryClient.invalidateQueries({
             queryKey: ["post-detail", commentAdded.postId],
           });
-          void queryClient.invalidateQueries({
+          queryClient.invalidateQueries({
             queryKey: ["feed"],
           });
 
