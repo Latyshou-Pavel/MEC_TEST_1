@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { togglePostLike } from "../../../entities/post/api/togglePostLike";
+import { togglePostLike } from "../api/togglePostLike";
 
 export function useToggleLikeMutation() {
   return useMutation({

@@ -1,5 +1,5 @@
 import { apiRequest } from "../../../shared/api/client";
-import type { PostsResponse, Tier } from "../model/types";
+import type { PostsResponse, Tier } from "../../../entities/post/model/types";
 
 type GetFeedParams = {
   cursor?: string;

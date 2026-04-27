@@ -1,5 +1,5 @@
 import { useMutation } from "@tanstack/react-query";
-import { addPostComment } from "../../../entities/post/api/addPostComment";
+import { addPostComment } from "../api/addPostComment";
 
 type AddCommentPayload = {
   postId: string;

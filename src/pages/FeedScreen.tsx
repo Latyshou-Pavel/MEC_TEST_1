@@ -23,8 +23,8 @@ import type { Tier } from "../entities/post/model/types";
 import { useFeedInfiniteQuery } from "../features/feed/model/useFeedInfiniteQuery";
 import { feedStore } from "../features/feed/model/feedStore";
 import { FeedErrorState } from "../features/feed/ui/FeedErrorState";
-import { ROUTES } from "../navigation/routes";
-import type { RootStackParamList } from "../navigation/types";
+import { ROUTES } from "../app/navigation/routes";
+import type { RootStackParamList } from "../app/navigation/types";
 import {
   colors,
   radius,

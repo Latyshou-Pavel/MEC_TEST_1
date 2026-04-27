@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { getFeed } from "../../../entities/post/api/getFeed";
+import { getFeed } from "../api/getFeed";
 import type { Post, Tier } from "../../../entities/post/model/types";
 
 type UseFeedInfiniteQueryParams = {

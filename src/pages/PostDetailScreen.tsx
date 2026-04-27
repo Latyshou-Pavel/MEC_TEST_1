@@ -20,7 +20,7 @@ import {
   PostContentBlock,
 } from "../entities/post/ui/PostContentBlock";
 import { SendCommentIcon } from "../shared/ui/icons/FeedIcons";
-import type { RootStackParamList } from "../navigation/types";
+import type { RootStackParamList } from "../app/navigation/types";
 import { useAddCommentMutation } from "../features/post-detail/model/useAddCommentMutation";
 import { usePostCommentsInfiniteQuery } from "../features/post-detail/model/usePostCommentsInfiniteQuery";
 import { usePostDetailQuery } from "../features/post-detail/model/usePostDetailQuery";

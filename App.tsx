@@ -5,7 +5,7 @@ import { StatusBar } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryProvider } from "./src/app/providers/QueryProvider";
 import { RealtimeProvider } from "./src/app/providers/RealtimeProvider";
-import { AppNavigator } from "./src/navigation/AppNavigator";
+import { AppNavigator } from "./src/app/navigation/AppNavigator";
 
 export default function App() {
   return (

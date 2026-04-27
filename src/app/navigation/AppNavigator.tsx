@@ -1,9 +1,9 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { FeedScreen } from "../screens/FeedScreen";
-import { PostDetailScreen } from "../screens/PostDetailScreen";
-import { colors, typography } from "../shared/theme/tokens";
+import { FeedScreen } from "../../pages/FeedScreen";
+import { PostDetailScreen } from "../../pages/PostDetailScreen";
+import { colors, typography } from "../../shared/theme/tokens";
 import type { RootStackParamList } from "./types";
 import { ROUTES } from "./routes";
 
