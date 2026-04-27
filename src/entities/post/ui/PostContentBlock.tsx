@@ -1,6 +1,6 @@
-import React from "react";
+import * as Haptics from "expo-haptics";
+import React, { type ReactNode } from "react";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import type { Post } from "../../../entities/post/model/types";
 import {
   CommentIcon,
   DollarSignIcon,
@@ -10,16 +10,41 @@ import {
 import {
   colors,
   radius,
+  sizes,
   spacing,
   typography,
 } from "../../../shared/theme/tokens";
+import type { Post } from "../model/types";
 
-type PostCardProps = {
+export const POST_MODE = {
+  FEED: "feed",
+  DETAIL: "detail",
+} as const;
+
+type PostMode = (typeof POST_MODE)[keyof typeof POST_MODE];
+
+type PostContentBlockProps = {
   post: Post;
+  mode: PostMode;
+  footer?: ReactNode;
+  onLikePress?: () => void;
+  likePressDisabled?: boolean;
+  children?: ReactNode;
 };
 
-export function PostCard({ post }: PostCardProps) {
-  const isPaid = post.tier === "paid";
+type PostReactionsRowProps = {
+  post: Post;
+  likeInteractive: boolean;
+  onLikePress?: () => void;
+  likePressDisabled?: boolean;
+};
+
+function PostReactionsRow({
+  post,
+  likeInteractive,
+  onLikePress,
+  likePressDisabled,
+}: PostReactionsRowProps) {
   const likeChipStyles = [
     styles.reactionChipBase,
     post.isLiked ? styles.likeChipActive : styles.likeChipDefault,
@@ -28,6 +53,103 @@ export function PostCard({ post }: PostCardProps) {
     styles.reactionTextBase,
     post.isLiked ? styles.likeTextActive : styles.likeTextDefault,
   ];
+
+  const likeInner = (
+    <>
+      <View style={styles.reactionIconSlot}>
+        {post.isLiked ? (
+          <LikeActiveIcon color={colors.reaction.activeContent} />
+        ) : (
+          <LikeDefaultIcon color={colors.reaction.defaultContent} />
+        )}
+      </View>
+      <Text style={likeTextStyles}>{post.likesCount}</Text>
+    </>
+  );
+
+  return (
+    <View style={styles.metaRow}>
+      {likeInteractive ? (
+        <Pressable
+          accessibilityLabel={post.isLiked ? "Убрать лайк" : "Поставить лайк"}
+          onPress={() => {
+            if (likePressDisabled) {
+              return;
+            }
+            void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            onLikePress?.();
+          }}
+          disabled={likePressDisabled}
+          style={({ pressed }) => [
+            ...likeChipStyles,
+            likePressDisabled && styles.likePressDisabled,
+            !likePressDisabled && pressed && styles.likePressPressed,
+          ]}
+        >
+          {likeInner}
+        </Pressable>
+      ) : (
+        <View style={likeChipStyles}>{likeInner}</View>
+      )}
+      <View style={[styles.reactionChipBase, styles.commentChip]}>
+        <View style={styles.reactionIconSlot}>
+          <CommentIcon color={colors.reaction.defaultContent} />
+        </View>
+        <Text style={[styles.reactionTextBase, styles.chipCountText]}>
+          {post.commentsCount}
+        </Text>
+      </View>
+    </View>
+  );
+}
+
+function resolvePostActionsSection(
+  isPaid: boolean,
+  mode: PostMode,
+  post: Post,
+  onLikePress: PostContentBlockProps["onLikePress"],
+  likePressDisabled: boolean,
+  footer: PostContentBlockProps["footer"],
+): ReactNode {
+  if (isPaid) {
+    return null;
+  }
+  if (mode === POST_MODE.FEED) {
+    return <PostReactionsRow post={post} likeInteractive={false} />;
+  }
+  if (onLikePress) {
+    return (
+      <PostReactionsRow
+        post={post}
+        likeInteractive
+        onLikePress={onLikePress}
+        likePressDisabled={likePressDisabled}
+      />
+    );
+  }
+  return footer ?? null;
+}
+
+export function PostContentBlock({
+  post,
+  mode,
+  footer,
+  onLikePress,
+  likePressDisabled = false,
+  children,
+}: PostContentBlockProps) {
+  const isPaid = post.tier === "paid";
+  const mainText =
+    mode === POST_MODE.DETAIL ? post.body || post.preview : post.preview;
+
+  const actionsSection = resolvePostActionsSection(
+    isPaid,
+    mode,
+    post,
+    onLikePress,
+    likePressDisabled,
+    footer,
+  );
 
   return (
     <View style={styles.card}>
@@ -42,7 +164,7 @@ export function PostCard({ post }: PostCardProps) {
             source={{ uri: post.coverUrl }}
             style={styles.cover}
             resizeMode="cover"
-            blurRadius={isPaid ? 40 : 0}
+            blurRadius={isPaid ? sizes.post.paidImageBlur : 0}
           />
           {isPaid ? (
             <View style={styles.paidOverlay}>
@@ -65,34 +187,15 @@ export function PostCard({ post }: PostCardProps) {
       ) : (
         <Text style={styles.title}>{post.title}</Text>
       )}
+
       {isPaid ? (
         <View style={styles.paidPreviewSkeleton} />
       ) : (
-        <Text style={styles.preview}>{post.preview}</Text>
+        <Text style={styles.mainText}>{mainText}</Text>
       )}
 
-      {!isPaid ? (
-        <View style={styles.metaRow}>
-          <View style={likeChipStyles}>
-            <View style={styles.reactionIconSlot}>
-              {post.isLiked ? (
-                <LikeActiveIcon color={colors.reaction.activeContent} />
-              ) : (
-                <LikeDefaultIcon color={colors.reaction.defaultContent} />
-              )}
-            </View>
-            <Text style={likeTextStyles}>{post.likesCount}</Text>
-          </View>
-          <View style={[styles.reactionChipBase, styles.commentChip]}>
-            <View style={styles.reactionIconSlot}>
-              <CommentIcon color={colors.reaction.defaultContent} />
-            </View>
-            <Text style={[styles.reactionTextBase, styles.commentText]}>
-              {post.commentsCount}
-            </Text>
-          </View>
-        </View>
-      ) : null}
+      {actionsSection}
+      {children}
     </View>
   );
 }
@@ -108,15 +211,15 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   authorRow: {
-    minHeight: 40,
+    minHeight: sizes.post.authorRowMinHeight,
     flexDirection: "row",
     alignItems: "center",
     gap: spacing.sm,
   },
   avatar: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: sizes.avatar,
+    height: sizes.avatar,
+    borderRadius: sizes.avatar / 2,
     backgroundColor: colors.background.avatarPlaceholder,
   },
   authorName: {
@@ -152,8 +255,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.md,
   },
   paidIconBox: {
-    width: 42,
-    height: 42,
+    width: sizes.post.paidIconBox,
+    height: sizes.post.paidIconBox,
     borderRadius: radius.md,
     backgroundColor: colors.paid.accent,
     alignItems: "center",
@@ -169,8 +272,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   paidButton: {
-    width: 239,
-    height: 42,
+    width: sizes.post.paidButtonWidth,
+    height: sizes.post.paidButtonHeight,
     borderRadius: radius.lg,
     backgroundColor: colors.paid.accent,
     alignItems: "center",
@@ -193,7 +296,7 @@ const styles = StyleSheet.create({
     letterSpacing: typography.postTitle.letterSpacing,
     color: colors.text.primary,
   },
-  preview: {
+  mainText: {
     fontFamily: typography.postBody.fontFamily,
     fontSize: typography.postBody.fontSize,
     lineHeight: typography.postBody.lineHeight,
@@ -202,16 +305,16 @@ const styles = StyleSheet.create({
     color: colors.text.secondary,
   },
   paidPreviewSkeleton: {
-    width: 361,
-    height: 40,
-    borderRadius: 22,
+    width: sizes.post.paidPreviewWidth,
+    height: sizes.post.paidPreviewHeight,
+    borderRadius: radius.xxl,
     backgroundColor: colors.background.skeleton,
     alignSelf: "flex-start",
   },
   paidTitleSkeleton: {
-    width: 164,
-    height: 26,
-    borderRadius: 22,
+    width: sizes.post.paidTitleWidth,
+    height: sizes.post.paidTitleHeight,
+    borderRadius: radius.xxl,
     backgroundColor: colors.background.skeleton,
     alignSelf: "flex-start",
   },
@@ -221,18 +324,18 @@ const styles = StyleSheet.create({
     gap: spacing.xs,
   },
   reactionChipBase: {
-    minWidth: 63,
-    height: 36,
+    minWidth: sizes.post.reactionChipMinWidth,
+    height: sizes.post.reactionChipHeight,
     borderRadius: radius.pill,
-    paddingVertical: 6,
-    paddingHorizontal: 10,
+    paddingVertical: sizes.post.reactionChipPaddingVertical,
+    paddingHorizontal: sizes.post.reactionChipPaddingHorizontal,
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     gap: spacing.xxs,
   },
   reactionIconSlot: {
-    width: 17,
+    width: sizes.post.reactionIconSlot,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -259,7 +362,13 @@ const styles = StyleSheet.create({
   likeTextActive: {
     color: colors.reaction.activeContent,
   },
-  commentText: {
+  chipCountText: {
     color: colors.reaction.defaultContent,
+  },
+  likePressDisabled: {
+    opacity: 0.5,
+  },
+  likePressPressed: {
+    opacity: 0.88,
   },
 });

@@ -14,7 +14,6 @@ function buildUrl(path: string, query?: RequestOptions["query"]) {
     ? API_BASE_URL
     : `${API_BASE_URL}/`;
   const normalizedPath = path.replace(/^\/+/, "");
-  // const url = new URL(API_BASE_URL);
   const url = new URL(normalizedPath, normalizedBaseUrl);
 
   if (query) {

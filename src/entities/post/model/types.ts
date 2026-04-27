@@ -32,3 +32,42 @@ export type PostsResponse = {
     hasMore: boolean;
   };
 };
+
+export type PostDetailResponse = {
+  ok: boolean;
+  data: {
+    post: Post;
+  };
+};
+
+export type Comment = {
+  id: string;
+  postId: string;
+  author: Author;
+  text: string;
+  createdAt: string;
+};
+
+export type CommentsResponse = {
+  ok: boolean;
+  data: {
+    comments: Comment[];
+    nextCursor: string | null;
+    hasMore: boolean;
+  };
+};
+
+export type LikeResponse = {
+  ok: boolean;
+  data: {
+    isLiked: boolean;
+    likesCount: number;
+  };
+};
+
+export type AddCommentResponse = {
+  ok: boolean;
+  data: {
+    comment: Comment;
+  };
+};

@@ -1,25 +1,21 @@
+import "react-native-gesture-handler";
+import "react-native-reanimated";
 import React from "react";
-import { StatusBar, StyleSheet } from "react-native";
-import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import { QueryProvider } from "./src/app/providers/QueryProvider";
-import { FeedScreen } from "./src/screens/FeedScreen";
+import { RealtimeProvider } from "./src/app/providers/RealtimeProvider";
+import { AppNavigator } from "./src/navigation/AppNavigator";
 
 export default function App() {
   return (
-    <QueryProvider>
-      <SafeAreaProvider>
-        <SafeAreaView style={styles.safeArea}>
+    <SafeAreaProvider>
+      <QueryProvider>
+        <RealtimeProvider>
           <StatusBar barStyle="dark-content" />
-          <FeedScreen />
-        </SafeAreaView>
-      </SafeAreaProvider>
-    </QueryProvider>
+          <AppNavigator />
+        </RealtimeProvider>
+      </QueryProvider>
+    </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: "#FFFFFF",
-  },
-});
