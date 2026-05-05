@@ -63,7 +63,6 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
   const {
     data: postData,
     isLoading: isPostLoading,
-    refetch: refetchPost,
   } = usePostDetailQuery(postId);
   const {
     data: commentsData,
@@ -71,7 +70,6 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
     hasNextPage,
     isFetchingNextPage,
     fetchNextPage,
-    refetch: refetchComments,
   } = usePostCommentsInfiniteQuery(postId);
   const { mutateAsync: toggleLike, isPending: isToggleLikePending } =
     useToggleLikeMutation();
@@ -112,7 +110,6 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
     }
 
     await toggleLike(post.id);
-    await refetchPost();
   };
 
   const handleSendComment = async () => {
@@ -124,8 +121,6 @@ export function PostDetailScreen({ route }: PostDetailScreenProps) {
 
     await addComment({ postId, text: trimmedText });
     setCommentText("");
-    await refetchComments();
-    await refetchPost();
   };
 
   const isCommentInputFilled = commentText.trim().length > 0;

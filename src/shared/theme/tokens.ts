@@ -77,6 +77,7 @@ export const sizes = {
     filterTrackHeight: 38,
     listEmptyStateMinHeight: 240,
     listEmptyStateViewportHeightFraction: 0.45,
+    errorIllustrationSize: 128,
   },
   post: {
     authorRowMinHeight: 40,

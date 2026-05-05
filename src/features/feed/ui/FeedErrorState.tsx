@@ -10,6 +10,7 @@ import {
 import {
   colors,
   radius,
+  sizes,
   spacing,
   typography,
 } from "../../../shared/theme/tokens";
@@ -65,12 +66,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   illustration: {
-    width: 128,
-    height: 128,
+    width: sizes.feed.errorIllustrationSize,
+    height: sizes.feed.errorIllustrationSize,
   },
   button: {
-    width: 361,
-    height: 42,
+    width: sizes.post.paidPreviewWidth,
+    height: sizes.post.paidButtonHeight,
     backgroundColor: colors.button.primary,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.xxl,
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   buttonLoading: {
-    width: 239,
+    width: sizes.post.paidButtonWidth,
     backgroundColor: colors.button.loading,
   },
   buttonContent: {

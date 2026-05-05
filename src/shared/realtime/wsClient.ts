@@ -1,7 +1,6 @@
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://k8s.mectest.ru/test-app";
-const API_TOKEN =
-  process.env.EXPO_PUBLIC_API_TOKEN ?? "550e8400-e29b-41d4-a716-446655440000";
+const API_TOKEN = process.env.EXPO_PUBLIC_API_TOKEN ?? "";
 const WS_URL = process.env.EXPO_PUBLIC_WS_URL ?? `${API_BASE_URL}/ws`;
 
 type WsEventMessage = {
@@ -62,10 +61,15 @@ export function connectWs() {
   manuallyClosed = false;
   const wsUrl = normalizeWsUrl(WS_URL);
   const separator = wsUrl.includes("?") ? "&" : "?";
-  const authUrl = `${wsUrl}${separator}token=${encodeURIComponent(API_TOKEN)}`;
+  // Token is passed as a query param because the server does not support
+  // Sec-WebSocket-Protocol-based auth. Migrate to the protocol header once
+  // the backend adds support for it.
+  const authUrl = API_TOKEN
+    ? `${wsUrl}${separator}token=${encodeURIComponent(API_TOKEN)}`
+    : wsUrl;
 
   if (__DEV__) {
-    console.log("[ws] connecting:", authUrl);
+    console.log("[ws] connecting:", wsUrl);
   }
 
   socket = new WebSocket(authUrl);

@@ -9,6 +9,7 @@ import {
 import type {
   Comment,
   CommentsResponse,
+  PostDetailResponse,
 } from "../../entities/post/model/types";
 
 type WsIncomingMessage = {
@@ -66,14 +67,24 @@ export function RealtimeProvider({ children }: PropsWithChildren) {
             return;
           }
 
-          queryClient.invalidateQueries({
-            queryKey: ["post-detail", likeUpdated.postId],
-          });
-          queryClient.invalidateQueries({
-            queryKey: ["feed"],
-          });
+          queryClient.setQueryData<PostDetailResponse>(
+            ["post-detail", likeUpdated.postId],
+            (cached) => {
+              if (!cached) return cached;
+              return {
+                ...cached,
+                data: {
+                  post: {
+                    ...cached.data.post,
+                    likesCount: likeUpdated.likesCount,
+                  },
+                },
+              };
+            },
+          );
+          queryClient.invalidateQueries({ queryKey: ["feed"] });
           if (__DEV__) {
-            console.log("[ws] like_updated invalidate:", likeUpdated);
+            console.log("[ws] like_updated applied:", likeUpdated);
           }
           return;
         }

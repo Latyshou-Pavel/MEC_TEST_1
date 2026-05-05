@@ -1,7 +1,6 @@
 const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_BASE_URL ?? "https://k8s.mectest.ru/test-app";
-const API_TOKEN =
-  process.env.EXPO_PUBLIC_API_TOKEN ?? "550e8400-e29b-41d4-a716-446655440000";
+const API_TOKEN = process.env.EXPO_PUBLIC_API_TOKEN ?? "";
 
 type PrimitiveQuery = string | number | boolean;
 

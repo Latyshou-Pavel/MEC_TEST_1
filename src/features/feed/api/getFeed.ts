@@ -5,11 +5,10 @@ type GetFeedParams = {
   cursor?: string;
   limit?: number;
   tier?: Tier;
-  simulateError?: boolean;
 };
 
 export async function getFeed(params: GetFeedParams = {}) {
-  const { cursor, limit = 10, tier, simulateError } = params;
+  const { cursor, limit = 10, tier } = params;
 
   return apiRequest<PostsResponse>("/posts", {
     method: "GET",
@@ -17,7 +16,6 @@ export async function getFeed(params: GetFeedParams = {}) {
       cursor,
       limit,
       tier,
-      simulate_error: simulateError,
     },
   });
 }

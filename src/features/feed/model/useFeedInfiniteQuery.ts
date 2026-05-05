@@ -6,23 +6,20 @@ import type { Post, Tier } from "../../../entities/post/model/types";
 type UseFeedInfiniteQueryParams = {
   limit?: number;
   tier?: Tier;
-  simulateError?: boolean;
 };
 
 export function useFeedInfiniteQuery({
   limit = 10,
   tier,
-  simulateError,
 }: UseFeedInfiniteQueryParams = {}) {
   const query = useInfiniteQuery({
-    queryKey: ["feed", { limit, tier, simulateError }],
+    queryKey: ["feed", { limit, tier }],
     initialPageParam: undefined as string | undefined,
     queryFn: ({ pageParam }) =>
       getFeed({
         cursor: pageParam,
         limit,
         tier,
-        simulateError,
       }),
     getNextPageParam: (lastPage) => lastPage.data.nextCursor ?? undefined,
   });

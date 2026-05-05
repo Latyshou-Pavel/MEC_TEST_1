@@ -33,5 +33,5 @@ npx expo start
 Переменные окружения:
 ```env
 EXPO_PUBLIC_API_BASE_URL=https://k8s.mectest.ru/test-app
-EXPO_PUBLIC_API_TOKEN=550e8400-e29b-41d4-a716-446655440000
+EXPO_PUBLIC_API_TOKEN=your-api-token-here
 ```

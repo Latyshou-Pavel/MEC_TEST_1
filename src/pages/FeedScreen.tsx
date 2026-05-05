@@ -19,9 +19,8 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { observer } from "mobx-react-lite";
-import type { Tier } from "../entities/post/model/types";
 import { useFeedInfiniteQuery } from "../features/feed/model/useFeedInfiniteQuery";
-import { feedStore } from "../features/feed/model/feedStore";
+import { feedStore, FEED_FILTERS } from "../features/feed/model/feedStore";
 import { FeedErrorState } from "../features/feed/ui/FeedErrorState";
 import { ROUTES } from "../app/navigation/routes";
 import type { RootStackParamList } from "../app/navigation/types";
@@ -37,26 +36,11 @@ import {
   PostContentBlock,
 } from "../entities/post/ui/PostContentBlock";
 
-type FeedFilter = {
-  key: "all" | Tier;
-  label: string;
-  tier?: Tier;
-};
-
-const FEED_FILTERS: FeedFilter[] = [
-  { key: "all", label: "Все" },
-  { key: "free", label: "Бесплатные", tier: "free" },
-  { key: "paid", label: "Платные", tier: "paid" },
-];
-
 export const FeedScreen = observer(() => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const insets = useSafeAreaInsets();
   const { height: windowHeight } = useWindowDimensions();
-  const [selectedFilter, setSelectedFilter] = useState<FeedFilter>(
-    FEED_FILTERS[0],
-  );
   const [isUserRefreshing, setIsUserRefreshing] = useState(false);
   const [showScrollTopButton, setShowScrollTopButton] = useState(false);
   const listRef = useRef<FlatList<(typeof feedStore.posts)[number]>>(null);
@@ -69,7 +53,7 @@ export const FeedScreen = observer(() => {
     isFetchingNextPage,
     fetchNextPage,
     refetch,
-  } = useFeedInfiniteQuery({ tier: selectedFilter.tier });
+  } = useFeedInfiniteQuery({ tier: feedStore.selectedFilter.tier });
 
   useEffect(() => {
     feedStore.setPosts(posts);
@@ -148,14 +132,14 @@ export const FeedScreen = observer(() => {
             <View style={styles.filtersRow}>
               <View style={styles.filterTrack}>
                 {FEED_FILTERS.map((filter, index) => {
-                  const isActive = filter.key === selectedFilter.key;
+                  const isActive = filter.key === feedStore.selectedFilter.key;
                   const isFirst = index === 0;
                   const isLast = index === FEED_FILTERS.length - 1;
 
                   return (
                     <Pressable
                       key={filter.key}
-                      onPress={() => setSelectedFilter(filter)}
+                      onPress={() => feedStore.setSelectedFilter(filter)}
                       style={({ pressed }) => [
                         styles.filterSegment,
                         isActive && styles.filterSegmentActive,
