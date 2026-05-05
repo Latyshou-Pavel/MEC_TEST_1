@@ -3,7 +3,6 @@
     "name": "MEC Test 1",
     "slug": "mec-test-1",
     "version": "1.0.0",
-    "platforms": ["ios", "android"],
-    "sdkVersion": "55.0.0"
+    "platforms": ["ios", "android"]
   }
 }
